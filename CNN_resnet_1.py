@@ -1,3 +1,5 @@
+from new_ResNet50V2 import new_ResNet50V2
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -6,13 +8,13 @@ from sklearn.model_selection import train_test_split
 from tensorflow.python.keras.callbacks import CSVLogger
 
 # 讀取CSV檔案
-df = pd.read_csv('dataset2.csv')
+df = pd.read_csv('dataset.csv')
 
 # 讀取圖片並進行資料處理
 X = []
 y = []
 for _, row in df.iterrows():
-    img = load_img(row['path'], color_mode='rgb', target_size=(224, 224))
+    img = load_img(row['path'], color_mode='rgb', target_size=(64, 64))
     img_array = img_to_array(img) / 255.0  # 正規化像素值
     X.append(img_array)
     y.append(row['state'])
@@ -25,12 +27,15 @@ y = np.array(y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.0625, random_state=42)
 
-# 初始化 VGG16 模型
-vgg_model = tf.keras.applications.VGG16(include_top=False, input_shape=(224, 224, 3), weights='imagenet')
+# 初始化 ResNet50V2 模型
+resnet_model = new_ResNet50V2(include_top=False,
+                              input_shape=(64, 64, 3),
+                              pooling='max',
+                              weights='imagenet')
 
-# 在 VGG16 模型之上搭建分類模型
+# 在 ResNet50V2 模型之上搭建分類模型
 classifier = tf.keras.Sequential([
-    vgg_model,
+    resnet_model,
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(units=128, activation='relu'),
     tf.keras.layers.Dense(units=1, activation='sigmoid')
@@ -51,9 +56,9 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)
 # 編譯模型
 classifier.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
 
-csv_logger = CSVLogger('result/train/csv/train_epoch100_vgg16_logs.csv', append=False)
+csv_logger = CSVLogger('result/train/csv/train_epoch100_resnet_new_logs.csv', append=False)
 
-batch_size = 4
+batch_size = 32
 history = classifier.fit(X_train,
                          y_train,
                          epochs=epoch_size,
@@ -63,4 +68,4 @@ history = classifier.fit(X_train,
                          validation_steps=525 // batch_size,
                          callbacks=[csv_logger])
 
-classifier.save('model/train_model_epoch100_vgg16')
+classifier.save('model/train_model_epoch100_resnet_new')
