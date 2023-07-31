@@ -41,20 +41,15 @@ def new_ResNet50V2(include_top=True,
             x = tf.keras.layers.GlobalMaxPooling2D(name='max_pool')(x)
 
     model = tf.keras.Model(img_input, x, name='new_resnet50v2')
+    model = tf.keras.applications.resnet_v2.ResNet50V2(weights='imagenet')
 
-    # 自動下載 ImageNet 的預訓練權重
-    if weights == 'imagenet':
-        if tf.io.gfile.exists('resnet50v2_weights_tf_dim_ordering_tf_kernels.h5'):
-            model.load_weights('resnet50v2_weights_tf_dim_ordering_tf_kernels.h5')
-        else:
-            raise ValueError(
-                "Cannot find the local weight file 'resnet50v2_weights_tf_dim_ordering_tf_kernels.h5'. Please specify "
-                "the correct file path.")
-
-        if tf.io.gfile.exists('resnet50_imagenet_1000.h5'):
-            model.load_weights('resnet50_imagenet_1000.h5')
-        else:
-            raise ValueError(
-                "Cannot find the local weight file 'resnet50_imagenet_1000.h5'. Please specify the correct file path.")
+    # 自動下載 ImageNet 的預訓練權重 if weights == 'imagenet': if tf.io.gfile.exists(
+    # 'resnet50v2_weights_tf_dim_ordering_tf_kernels.h5'): model.load_weights(
+    # 'resnet50v2_weights_tf_dim_ordering_tf_kernels.h5') else: raise ValueError( "Cannot find the local weight file
+    # 'resnet50v2_weights_tf_dim_ordering_tf_kernels.h5'. Please specify " "the correct file path.")
+    #
+    # if tf.io.gfile.exists('resnet50_imagenet_1000.h5'): model.load_weights('resnet50_imagenet_1000.h5') else: raise
+    # ValueError( "Cannot find the local weight file 'resnet50_imagenet_1000.h5'. Please specify the correct file
+    # path.")
 
     return model

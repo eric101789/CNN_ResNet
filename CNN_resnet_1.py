@@ -8,13 +8,13 @@ from sklearn.model_selection import train_test_split
 from tensorflow.python.keras.callbacks import CSVLogger
 
 # 讀取CSV檔案
-df = pd.read_csv('dataset.csv')
+df = pd.read_csv('dataset2.csv')
 
 # 讀取圖片並進行資料處理
 X = []
 y = []
 for _, row in df.iterrows():
-    img = load_img(row['path'], color_mode='rgb', target_size=(64, 64))
+    img = load_img(row['path'], color_mode='rgb', target_size=(224, 224))
     img_array = img_to_array(img) / 255.0  # 正規化像素值
     X.append(img_array)
     y.append(row['state'])
@@ -29,7 +29,7 @@ X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.
 
 # 初始化 ResNet50V2 模型
 resnet_model = new_ResNet50V2(include_top=False,
-                              input_shape=(64, 64, 3),
+                              input_shape=(224, 224, 3),
                               pooling='max',
                               weights='imagenet')
 
