@@ -1,1 +1,5 @@
 /model/
+resnet50v2_weights_tf_dim_ordering_tf_kernels_notop.h5
+resnet50v2_weights_tf_dim_ordering_tf_kernels.h5
+resnet50_imagenet_1000_no_top.h5
+resnet50_imagenet_1000.h5
